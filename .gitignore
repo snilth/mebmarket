@@ -3,4 +3,5 @@ __pycache__/
 .env
 docs/
 data/raw
-data/line/
+data/line/sessions.json
+data/line/richmenu_upload.jpg

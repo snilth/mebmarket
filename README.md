@@ -70,7 +70,15 @@ Two response modes:
 Flask webhook, `line-bot-sdk` v3. In development, Cloudflare Tunnel
 exposes the local server to LINE's Messaging API. Each carousel card
 shows cover, title, author, rating, review count, price, and links to
-the MEB page.
+the MEB page. Carousel colors come from `line/theme.py`, a shared
+book-market palette (warm brown/gold) also used by the Rich Menu.
+
+A Rich Menu (`line/richmenu.py`) shows automatically the moment a user
+opens the chat — a 4x5 grid with all 17 categories plus "สุ่มหนังสือ",
+"พิมพ์คำค้นเอง", and "วิธีใช้", so picking a category doesn't require
+typing. Tapping a tile sends a postback (`line/webhook.py:handle_postback`)
+that runs the recommendation engine directly, the same way a typed
+command does.
 
 ### 5. Evaluation (`evaluation/`)
 ```
@@ -96,6 +104,9 @@ pip install -r requirements.txt
 model. If you have an AMD GPU, install a ROCm-enabled `torch` build
 instead of the default CPU/CUDA one.
 
+Generating the Rich Menu image (`line/richmenu.py`) needs Thai + Latin
+system fonts — on Debian/Ubuntu: `sudo apt install fonts-noto-core`.
+
 Create `.env` for the LINE webhook:
 ```
 LINE_CHANNEL_ACCESS_TOKEN=...
@@ -111,9 +122,15 @@ LINE_CHANNEL_SECRET=...
 | Run full evaluation suite | `python -m evaluation.run_all` |
 | Start LINE webhook | `python -m line.webhook` |
 | Expose webhook locally | `cloudflared tunnel --url http://localhost:8000` |
+| Push the Rich Menu live (one-time / after category changes) | `python -m line.richmenu` |
 
 Set the LINE Messaging API webhook URL to
 `https://<cloudflare-tunnel-url>/callback`.
+
+`python -m line.richmenu` creates the rich menu on the connected LINE
+OA, uploads the generated image, and sets it as the default for every
+user — it's a real, visible change to the live bot, so run it
+deliberately rather than as part of routine startup.
 
 ## Example commands
 
@@ -133,7 +150,7 @@ scraper/         → Playwright scraper (MEB categories)
 processing/       → merge, dedupe, validate scraped data
 nlp/              → text normalization, intent, category match, constraints
 recommendation/   → hard filtering + ranking + randomization
-line/             → Flask webhook + Flex Carousel builder
+line/             → Flask webhook, Flex Carousel builder, Rich Menu, theme
 evaluation/       → data quality / NLP / recommendation / performance checks
 data/             → processed dataset, config, evaluation outputs
 docs/design.txt   → original architecture sketch

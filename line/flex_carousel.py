@@ -4,6 +4,15 @@ from urllib.parse import (
     urlunsplit,
 )
 
+from line.theme import (
+    ACCENT_DARK,
+    BACKGROUND,
+    FAINT_TEXT,
+    FREE_TAG,
+    MUTED_TEXT,
+    TITLE_TEXT,
+)
+
 
 # ============================================================
 # URL
@@ -254,7 +263,7 @@ def build_book_bubble(book):
                         2,
 
                     "color":
-                        "#222222",
+                        TITLE_TEXT,
                 },
 
                 {
@@ -268,7 +277,7 @@ def build_book_bubble(book):
                         "xs",
 
                     "color":
-                        "#888888",
+                        MUTED_TEXT,
 
                     "margin":
                         "xs",
@@ -305,7 +314,7 @@ def build_book_bubble(book):
                                 "xs",
 
                             "color":
-                                "#666666",
+                                MUTED_TEXT,
 
                             "flex":
                                 1,
@@ -328,11 +337,11 @@ def build_book_bubble(book):
                                 "end",
 
                             "color": (
-                                "#00A651"
+                                FREE_TAG
                                 if book.get(
                                     "is_free"
                                 )
-                                else "#222222"
+                                else ACCENT_DARK
                             ),
 
                             "flex":
@@ -352,7 +361,7 @@ def build_book_bubble(book):
                         "xxs",
 
                     "color":
-                        "#AAAAAA",
+                        FAINT_TEXT,
 
                     "margin":
                         "sm",
@@ -361,6 +370,13 @@ def build_book_bubble(book):
                         "center",
                 },
             ],
+        },
+
+        "styles": {
+            "body": {
+                "backgroundColor":
+                    BACKGROUND,
+            },
         },
     }
 

@@ -2,6 +2,9 @@ import json
 import os
 
 from pathlib import Path
+from urllib.parse import (
+    parse_qs,
+)
 
 from dotenv import (
     load_dotenv,
@@ -42,6 +45,10 @@ from linebot.v3.webhooks import (
 
 from line.flex_carousel import (
     build_line_response,
+)
+
+from line.richmenu import (
+    load_categories,
 )
 
 from nlp.model import (
@@ -424,6 +431,62 @@ def convert_line_message(
 
 
 # ============================================================
+# Rich Menu Commands
+# ============================================================
+
+CATEGORY_LOOKUP = {
+    str(
+        category["category_id"]
+    ): category["category_name"]
+    for category in load_categories()
+}
+
+
+def build_category_command(
+    category_id,
+    randomize=False,
+):
+    return {
+        "intent":
+            "recommend",
+
+        "randomize":
+            randomize,
+
+        "category_id":
+            category_id,
+
+        "category":
+            CATEGORY_LOOKUP.get(
+                str(category_id)
+            ),
+
+        "price_type":
+            None,
+
+        "max_price":
+            None,
+
+        "min_rating":
+            None,
+
+        "min_rating_count":
+            None,
+    }
+
+
+HELP_TEXT = (
+    "พิมพ์สิ่งที่อยากได้ เช่น\n\n"
+    "ขอนิยายแฟนตาซี\n"
+    "ขอหนังสือคอมราคาไม่เกิน 200 บาท\n"
+    "ขอหนังสือสุขภาพฟรี\n"
+    "แนะนำหนังสือการเงินเรต 4 ขึ้นไป\n"
+    "หานิยายสืบสวนรีวิวอย่างน้อย 20 คน\n\n"
+    "หรือกดเมนูด้านล่างเพื่อเลือกหมวดหนังสือได้เลย"
+)
+
+
+# ============================================================
 # Controls
 # ============================================================
 
@@ -432,7 +495,7 @@ def build_control_message(
 ):
     """
     Normal recommendation:
-        📚 ดูเพิ่ม
+        📚 ดูเพิ่มในหมวดนี้
 
     Explicit random:
         🎲 สุ่มอีก
@@ -473,13 +536,13 @@ def build_control_message(
                     QuickReplyItem(
                         action=PostbackAction(
                             label=
-                                "📚 ดูเพิ่ม",
+                                "📚 ดูเพิ่มในหมวดนี้",
 
                             data=
                                 "action=next_page",
 
                             display_text=
-                                "📚 ดูเพิ่ม",
+                                "📚 ดูเพิ่มในหมวดนี้",
                         )
                     )
                 ]
@@ -720,9 +783,145 @@ def handle_postback(
         data
     )
 
+    params = parse_qs(data)
+
+    action = params.get(
+        "action",
+        [None],
+    )[0]
+
     user_id = get_user_id(
         event
     )
+
+    # ========================================================
+    # RICH MENU: CATEGORY
+    # ========================================================
+
+    if action == "category":
+        category_id = params.get(
+            "category_id",
+            [None],
+        )[0]
+
+        command = build_category_command(
+            category_id
+        )
+
+        result = recommend_books(
+            command,
+            limit=5,
+        )
+
+        save_new_session(
+            user_id,
+            result,
+        )
+
+        if result.get(
+            "status"
+        ) != "ok":
+            reply_text(
+                event.reply_token,
+                (
+                    "ไม่พบหนังสือในหมวดนี้ "
+                    "ลองหมวดอื่นดูนะ"
+                ),
+            )
+
+            return
+
+        try:
+            reply_result(
+                event.reply_token,
+                result,
+            )
+
+        except Exception as exc:
+            print(
+                "Category reply error:",
+                repr(exc),
+            )
+
+        return
+
+    # ========================================================
+    # RICH MENU: QUICK RANDOM
+    # ========================================================
+
+    if action == "quick_random":
+        command = build_category_command(
+            None,
+            randomize=True,
+        )
+
+        result = recommend_books(
+            command,
+            limit=5,
+        )
+
+        save_new_session(
+            user_id,
+            result,
+        )
+
+        if result.get(
+            "status"
+        ) != "ok":
+            reply_text(
+                event.reply_token,
+                (
+                    "ยังหาหนังสือไม่เจอ "
+                    "ลองใหม่อีกครั้งนะ"
+                ),
+            )
+
+            return
+
+        try:
+            reply_result(
+                event.reply_token,
+                result,
+            )
+
+        except Exception as exc:
+            print(
+                "Quick random reply error:",
+                repr(exc),
+            )
+
+        return
+
+    # ========================================================
+    # RICH MENU: CUSTOM SEARCH
+    # ========================================================
+
+    if action == "custom_search":
+        reply_text(
+            event.reply_token,
+            (
+                "พิมพ์สิ่งที่อยากได้มาได้เลย เช่น\n"
+                "\"ขอนิยายแฟนตาซีฟรี เรต 4 ขึ้นไป\""
+            ),
+        )
+
+        return
+
+    # ========================================================
+    # RICH MENU: HELP
+    # ========================================================
+
+    if action == "help":
+        reply_text(
+            event.reply_token,
+            HELP_TEXT,
+        )
+
+        return
+
+    # ========================================================
+    # Follow-up actions below need an existing session.
+    # ========================================================
 
     if not user_id:
         return
@@ -749,7 +948,7 @@ def handle_postback(
     # NEXT PAGE
     # ========================================================
 
-    if data == "action=next_page":
+    if action == "next_page":
         if command.get(
             "randomize",
             False,
@@ -830,7 +1029,7 @@ def handle_postback(
     # RANDOM MORE
     # ========================================================
 
-    if data == "action=random_more":
+    if action == "random_more":
         if not command.get(
             "randomize",
             False,
