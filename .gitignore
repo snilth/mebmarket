@@ -3,3 +3,4 @@ __pycache__/
 .env
 docs/
 data/raw
+data/line/

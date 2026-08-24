@@ -1,4 +1,7 @@
+import json
 import os
+
+from pathlib import Path
 
 from dotenv import (
     load_dotenv,
@@ -109,7 +112,8 @@ app = Flask(
 # User Sessions
 # ============================================================
 
-# Development-only in-memory session.
+# In-memory session, persisted to disk after every change so a
+# webhook restart does not drop active users' paging/randomize state.
 #
 # Ranked:
 #
@@ -125,7 +129,65 @@ app = Flask(
 #     "seen_book_ids": {...}
 # }
 
+SESSION_PATH = Path(
+    "data/line/sessions.json"
+)
+
 USER_SESSIONS = {}
+
+
+def load_sessions():
+    if not SESSION_PATH.exists():
+        return
+
+    try:
+        raw = json.loads(
+            SESSION_PATH.read_text(
+                encoding="utf-8"
+            )
+        )
+
+    except (OSError, ValueError):
+        return
+
+    for user_id, session in raw.items():
+        session["seen_book_ids"] = set(
+            session.get(
+                "seen_book_ids",
+                [],
+            )
+        )
+
+        USER_SESSIONS[user_id] = session
+
+
+def save_sessions():
+    SESSION_PATH.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    serializable = {
+        user_id: {
+            **session,
+            "seen_book_ids": sorted(
+                session.get(
+                    "seen_book_ids",
+                    set(),
+                )
+            ),
+        }
+        for user_id, session
+        in USER_SESSIONS.items()
+    }
+
+    SESSION_PATH.write_text(
+        json.dumps(
+            serializable,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
 
 
 def get_user_id(event):
@@ -163,6 +225,8 @@ def save_new_session(
             user_id,
             None,
         )
+
+        save_sessions()
 
         return
 
@@ -208,6 +272,8 @@ def save_new_session(
                 0,
         }
 
+        save_sessions()
+
         return
 
     USER_SESSIONS[
@@ -225,6 +291,8 @@ def save_new_session(
         "seen_book_ids":
             set(),
     }
+
+    save_sessions()
 
 
 def add_seen_books(
@@ -263,6 +331,8 @@ def add_seen_books(
         seen.add(
             str(book_id)
         )
+
+    save_sessions()
 
 
 # ============================================================
@@ -851,6 +921,18 @@ def startup():
     print("=" * 80)
     print("MEB MARKET LINE BOT")
     print("=" * 80)
+
+    print()
+    print(
+        "Loading saved sessions..."
+    )
+
+    load_sessions()
+
+    print(
+        f"{len(USER_SESSIONS)} "
+        f"session(s) restored."
+    )
 
     print()
     print(
