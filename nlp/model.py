@@ -668,6 +668,35 @@ def classify_intent(
             "semantic_e5",
     }
 
+# ============================================================
+# Preload
+# ============================================================
+
+def preload_nlp():
+    """
+    Preload the semantic model and all static embeddings.
+
+    This is useful for production/webhook servers because
+    the first LINE user should not have to wait for model
+    initialization.
+    """
+
+    print("=" * 70)
+    print("PRELOADING NLP")
+    print("=" * 70)
+
+    # Load multilingual-e5-base into memory / GPU.
+    get_model()
+
+    # Precompute the 17 MEB category embeddings.
+    build_category_index()
+
+    # Precompute semantic intent embeddings.
+    build_intent_index()
+
+    print("NLP model and embeddings are ready.")
+    print("=" * 70)
+
 
 # ============================================================
 # Manual Test

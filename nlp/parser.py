@@ -1,5 +1,6 @@
 import json
 import re
+
 from pathlib import Path
 
 from rapidfuzz.fuzz import partial_ratio
@@ -8,13 +9,24 @@ from nlp.model import (
     classify_category,
     classify_intent,
 )
-from nlp.normalizer import normalize_text
 
+from nlp.normalizer import (
+    normalize_text,
+)
+
+
+# ============================================================
+# Configuration
+# ============================================================
 
 CATEGORY_ALIASES_PATH = Path(
     "data/nlp/category_aliases.json"
 )
 
+
+# ============================================================
+# Category Aliases
+# ============================================================
 
 def load_category_aliases():
     if not CATEGORY_ALIASES_PATH.exists():
@@ -26,6 +38,10 @@ def load_category_aliases():
     ) as file:
         return json.load(file)
 
+
+# ============================================================
+# Exact Category Matching
+# ============================================================
 
 def exact_category_match(text):
     normalized = normalize_text(
@@ -43,17 +59,16 @@ def exact_category_match(text):
 
         for alias in data.get(
             "aliases",
-            []
+            [],
         ):
             normalized_alias = normalize_text(
                 alias
             )
 
-            if (
-                normalized_alias
-                and normalized_alias
-                in normalized
-            ):
+            if not normalized_alias:
+                continue
+
+            if normalized_alias in normalized:
                 matches.append(
                     {
                         "category_id":
@@ -76,10 +91,13 @@ def exact_category_match(text):
     if not matches:
         return None
 
+    # Prefer the longest / most specific alias.
     matches.sort(
         key=lambda item: len(
             normalize_text(
-                item["matched_alias"]
+                item[
+                    "matched_alias"
+                ]
             )
         ),
         reverse=True,
@@ -87,6 +105,10 @@ def exact_category_match(text):
 
     return matches[0]
 
+
+# ============================================================
+# Fuzzy Category Matching
+# ============================================================
 
 def fuzzy_category_match(
     text,
@@ -101,13 +123,20 @@ def fuzzy_category_match(
     best = None
 
     for category_id, data in aliases.items():
+        category_name = data[
+            "category_name"
+        ]
+
         for alias in data.get(
             "aliases",
-            []
+            [],
         ):
             normalized_alias = normalize_text(
                 alias
             )
+
+            if not normalized_alias:
+                continue
 
             score = partial_ratio(
                 normalized_alias,
@@ -116,16 +145,16 @@ def fuzzy_category_match(
 
             if (
                 best is None
-                or score > best["score"]
+                or score > best[
+                    "score"
+                ]
             ):
                 best = {
                     "category_id":
                         str(category_id),
 
                     "category":
-                        data[
-                            "category_name"
-                        ],
+                        category_name,
 
                     "matched_alias":
                         alias,
@@ -147,26 +176,27 @@ def fuzzy_category_match(
     return None
 
 
+# ============================================================
+# Intent Rules
+# ============================================================
+
 RECOMMEND_PATTERNS = [
     r"แนะนำ",
     r"สุ่ม",
+    r"random",
     r"ช่วยเลือก",
     r"เลือก.*ให้หน่อย",
 
-    # Search-style requests are still recommendation
-    # requests in this project.
     r"ค้นหา",
     r"ช่วยหา",
     r"หา(?=หนังสือ|นิยาย|การ์ตูน|เรื่อง|แนว)",
 
-    # Existence questions
     r"มี.+ไหม",
     r"มี.+มั้ย",
     r"มี.+มั๊ย",
     r"มี.+หรือเปล่า",
     r"มี.+รึเปล่า",
 
-    # User preference / need patterns
     r"อยาก\s*อ่าน",
     r"อยาก\s*ได้",
     r"อยาก\s*เรียน",
@@ -194,6 +224,7 @@ def detect_intent_rule(text):
         if re.search(
             pattern,
             normalized,
+            flags=re.IGNORECASE,
         ):
             return {
                 "intent":
@@ -210,6 +241,14 @@ def detect_intent_rule(text):
 
 
 def detect_intent(text):
+    """
+    Detection order:
+
+    1. Explicit linguistic rule
+    2. Explicit category signal
+    3. Semantic E5 fallback
+    """
+
     rule_result = detect_intent_rule(
         text
     )
@@ -217,13 +256,77 @@ def detect_intent(text):
     if rule_result:
         return rule_result
 
+    # Allow category-only commands:
+    #
+    #   แฟนตาซี
+    #   ชช ฟรี
+    #   ญญ ไม่เกิน 200
+    #   จิตวิทยา
+    #
+    category_result = exact_category_match(
+        text
+    )
+
+    if category_result:
+        return {
+            "intent":
+                "recommend",
+
+            "score":
+                1.0,
+
+            "method":
+                "category_signal",
+        }
+
     return classify_intent(
         text
     )
 
 
+# ============================================================
+# Random Request Detection
+# ============================================================
+
+RANDOM_PATTERNS = [
+    r"สุ่ม",
+    r"random",
+    r"แรนดอม",
+    r"เลือกแบบสุ่ม",
+    r"สุ่มมา",
+]
+
+
+def extract_randomize(text):
+    """
+    randomize=True only when the user explicitly asks
+    for random recommendations.
+    """
+
+    normalized = normalize_text(
+        text
+    )
+
+    for pattern in RANDOM_PATTERNS:
+        if re.search(
+            pattern,
+            normalized,
+            flags=re.IGNORECASE,
+        ):
+            return True
+
+    return False
+
+
+# ============================================================
+# Category Detection
+# ============================================================
+
 def detect_category(text):
-    # 1. Explicit category aliases
+    # --------------------------------------------------------
+    # 1. Exact alias
+    # --------------------------------------------------------
+
     exact_result = exact_category_match(
         text
     )
@@ -231,7 +334,10 @@ def detect_category(text):
     if exact_result:
         return exact_result
 
-    # 2. Semantic category matching
+    # --------------------------------------------------------
+    # 2. Semantic E5
+    # --------------------------------------------------------
+
     semantic_result = classify_category(
         text
     )
@@ -239,11 +345,18 @@ def detect_category(text):
     if semantic_result:
         return semantic_result
 
+    # --------------------------------------------------------
     # 3. Typo fallback
+    # --------------------------------------------------------
+
     return fuzzy_category_match(
         text
     )
 
+
+# ============================================================
+# Price Type
+# ============================================================
 
 FREE_KEYWORDS = [
     "ฟรี",
@@ -276,6 +389,10 @@ def extract_price_type(text):
     return None
 
 
+# ============================================================
+# Maximum Price
+# ============================================================
+
 MAX_PRICE_PATTERNS = [
     r"(?:ราคา)?ไม่เกิน\s*(\d+(?:\.\d+)?)\s*(?:บาท)?",
 
@@ -306,27 +423,39 @@ def extract_max_price(text):
     return None
 
 
+# ============================================================
+# Minimum Rating
+# ============================================================
+
 RATING_PATTERNS = [
-    r"(?:เรตติ้ง|เรต|rating)\s*"
-    r"(\d(?:\.\d+)?)"
-    r"(?!\d)"
-    r"\s*(?:ขึ้นไป|กว่า|มากกว่า)?",
+    (
+        r"(?:เรตติ้ง|เรต|rating)\s*"
+        r"(\d(?:\.\d+)?)"
+        r"(?!\d)"
+        r"\s*(?:ขึ้นไป|กว่า|มากกว่า)?"
+    ),
 
-    r"(\d(?:\.\d+)?)"
-    r"(?!\d)"
-    r"\s*(?:ดาว|star|stars)"
-    r"\s*(?:ขึ้นไป|กว่า|มากกว่า)?",
+    (
+        r"(\d(?:\.\d+)?)"
+        r"(?!\d)"
+        r"\s*(?:ดาว|star|stars)"
+        r"\s*(?:ขึ้นไป|กว่า|มากกว่า)?"
+    ),
 
-    r"(?:คะแนน)\s*"
-    r"(?:อย่างน้อย\s*)?"
-    r"(\d(?:\.\d+)?)"
-    r"(?!\d)"
-    r"\s*(?:ขึ้นไป|กว่า|มากกว่า)?",
+    (
+        r"(?:คะแนน)\s*"
+        r"(?:อย่างน้อย\s*)?"
+        r"(\d(?:\.\d+)?)"
+        r"(?!\d)"
+        r"\s*(?:ขึ้นไป|กว่า|มากกว่า)?"
+    ),
 
-    r"(?:อย่างน้อย|ไม่น้อยกว่า)\s*"
-    r"(\d(?:\.\d+)?)"
-    r"(?!\d)"
-    r"\s*(?:ดาว|คะแนน)",
+    (
+        r"(?:อย่างน้อย|ไม่น้อยกว่า)\s*"
+        r"(\d(?:\.\d+)?)"
+        r"(?!\d)"
+        r"\s*(?:ดาว|คะแนน)"
+    ),
 ]
 
 
@@ -353,20 +482,30 @@ def extract_min_rating(text):
     return None
 
 
+# ============================================================
+# Minimum Rating Count
+# ============================================================
+
 REVIEW_COUNT_PATTERNS = [
-    r"(?:รีวิว|review|reviews)\s*"
-    r"(?:อย่างน้อย|ไม่น้อยกว่า)?\s*"
-    r"(\d+)\s*"
-    r"(?:คน|รีวิว)?\s*"
-    r"(?:ขึ้นไป|กว่า|มากกว่า)?",
+    (
+        r"(?:รีวิว|review|reviews)\s*"
+        r"(?:อย่างน้อย|ไม่น้อยกว่า)?\s*"
+        r"(\d+)\s*"
+        r"(?:คน|รีวิว)?\s*"
+        r"(?:ขึ้นไป|กว่า|มากกว่า)?"
+    ),
 
-    r"(?:อย่างน้อย|ไม่น้อยกว่า)\s*"
-    r"(\d+)\s*"
-    r"(?:รีวิว|review|reviews|คน)",
+    (
+        r"(?:อย่างน้อย|ไม่น้อยกว่า)\s*"
+        r"(\d+)\s*"
+        r"(?:รีวิว|review|reviews|คน)"
+    ),
 
-    r"(\d+)\s*"
-    r"(?:รีวิว|review|reviews)\s*"
-    r"(?:ขึ้นไป|กว่า|มากกว่า)",
+    (
+        r"(\d+)\s*"
+        r"(?:รีวิว|review|reviews)\s*"
+        r"(?:ขึ้นไป|กว่า|มากกว่า)"
+    ),
 ]
 
 
@@ -392,6 +531,10 @@ def extract_min_rating_count(text):
 
     return None
 
+
+# ============================================================
+# Validation
+# ============================================================
 
 def validate_command(command):
     errors = []
@@ -468,6 +611,10 @@ def validate_command(command):
     }
 
 
+# ============================================================
+# Main Parser
+# ============================================================
+
 def parse_command(text):
     normalized_text = normalize_text(
         text
@@ -480,6 +627,14 @@ def parse_command(text):
     intent = intent_result[
         "intent"
     ]
+
+    randomize = extract_randomize(
+        normalized_text
+    )
+
+    # --------------------------------------------------------
+    # Unknown
+    # --------------------------------------------------------
 
     if intent == "unknown":
         command = {
@@ -501,6 +656,9 @@ def parse_command(text):
                 intent_result.get(
                     "method"
                 ),
+
+            "randomize":
+                False,
 
             "category_id":
                 None,
@@ -535,6 +693,10 @@ def parse_command(text):
 
         return command
 
+    # --------------------------------------------------------
+    # Category
+    # --------------------------------------------------------
+
     category_result = detect_category(
         normalized_text
     )
@@ -558,6 +720,10 @@ def parse_command(text):
             intent_result.get(
                 "method"
             ),
+
+        # NEW
+        "randomize":
+            randomize,
 
         "category_id":
             (
@@ -625,30 +791,25 @@ def parse_command(text):
     return command
 
 
+# ============================================================
+# Manual Test
+# ============================================================
+
 if __name__ == "__main__":
     examples = [
-        "หาหนังสือการเงินราคาไม่เกิน 200 บาท",
+        "ขอนิยายแฟนตาซี",
 
-        "มีหนังสือคอมฟรีๆ มั้ย",
+        "สุ่มนิยายแฟนตาซี",
 
-        "ขอนิยายสืบสวยหน่อย",
+        "ขอหนังสือคอมราคาไม่เกิน 200 บาท",
 
-        "หาเรื่องการเงินการลงทุนน",
+        "หานิยายสืบสวนรีวิวอย่างน้อย 20 คน",
 
-        (
-            "หาหนังสือคอม "
-            "ราคาไม่เกิน 200 บาท "
-            "รีวิวอย่างน้อย 20 คน"
-        ),
+        "ชช ฟรี",
 
-        (
-            "อยากได้หนังสือการเงิน "
-            "ไม่เกิน 300 "
-            "เรต 4 ขึ้นไป "
-            "รีวิว 20 คนขึ้นไป"
-        ),
+        "ญญ ราคาไม่เกิน 150",
 
-        "อยากอ่านจิตวิดยา",
+        "อยากอ่านเรื่องเวทมนตร์กับมังกร",
 
         "ขอบคุณมาก",
     ]
