@@ -1,0 +1,265 @@
+[
+  {
+    "text": "ขอนิยายแฟนตาซีให้หน่อย",
+    "type": "normal",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "4",
+      "category": "นิยายแฟนตาซี",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "แนะนำหนังสือคอมพิวเตอร์หน่อย",
+    "type": "normal",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "18",
+      "category": "คอมพิวเตอร์",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "ขอหนังสือจิตวิทยาฟรี",
+    "type": "normal",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "154",
+      "category": "จิตวิทยา",
+      "price_type": "free",
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "หาหนังสือการเงินราคาไม่เกิน 200 บาท",
+    "type": "normal",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "60",
+      "category": "การเงินการลงทุน",
+      "price_type": null,
+      "max_price": 200,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "ขอนิยายรักเรตติ้ง 4 ขึ้นไป",
+    "type": "normal",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "21",
+      "category": "นิยายรัก",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": 4.0,
+      "min_rating_count": null
+    }
+  },
+
+  {
+    "text": "อยากอ่านแฟนตาซีอะ",
+    "type": "colloquial",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "4",
+      "category": "นิยายแฟนตาซี",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "มีหนังสือคอมฟรีๆ มั้ย",
+    "type": "colloquial",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "18",
+      "category": "คอมพิวเตอร์",
+      "price_type": "free",
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "อยากอ่านแนวจิตวิทยาอะ ขอแบบไม่แพง",
+    "type": "colloquial",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "154",
+      "category": "จิตวิทยา",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "สุ่มนิยายจีนมาให้หน่อย",
+    "type": "colloquial",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "228",
+      "category": "นิยายรักจีนโบราณ",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "อยากได้เรื่องแนวสืบสวนมันๆ",
+    "type": "colloquial",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "48",
+      "category": "นิยายสืบสวนสอบสวน/ทริลเลอร์",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+
+  {
+    "text": "ขอนิยายแฟนตาซี่หน่อย",
+    "type": "typo",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "4",
+      "category": "นิยายแฟนตาซี",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "ขอหนังสือคอมพิ้วเตอร์",
+    "type": "typo",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "18",
+      "category": "คอมพิวเตอร์",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "อยากอ่านจิตวิดยา",
+    "type": "typo",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "154",
+      "category": "จิตวิทยา",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "ขอนิยายสืบสวยหน่อย",
+    "type": "typo",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "48",
+      "category": "นิยายสืบสวนสอบสวน/ทริลเลอร์",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "หาเรื่องการเงินการลงทุนน",
+    "type": "typo",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "60",
+      "category": "การเงินการลงทุน",
+      "price_type": null,
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": null
+    }
+  },
+
+  {
+    "text": "ขอนิยายแฟนตาซีฟรี 4 ดาวขึ้นไป",
+    "type": "complex",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "4",
+      "category": "นิยายแฟนตาซี",
+      "price_type": "free",
+      "max_price": null,
+      "min_rating": 4.0,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "หาหนังสือคอมราคาไม่เกิน 200 บาท รีวิวอย่างน้อย 20 คน",
+    "type": "complex",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "18",
+      "category": "คอมพิวเตอร์",
+      "price_type": null,
+      "max_price": 200,
+      "min_rating": null,
+      "min_rating_count": 20
+    }
+  },
+  {
+    "text": "ขอหนังสือจิตวิทยาไม่เกิน 150 บาท เรต 4.5 ขึ้นไป",
+    "type": "complex",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "154",
+      "category": "จิตวิทยา",
+      "price_type": null,
+      "max_price": 150,
+      "min_rating": 4.5,
+      "min_rating_count": null
+    }
+  },
+  {
+    "text": "สุ่มนิยายรักจีนโบราณฟรีที่มีรีวิวอย่างน้อย 5 คนให้หน่อย",
+    "type": "complex",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "228",
+      "category": "นิยายรักจีนโบราณ",
+      "price_type": "free",
+      "max_price": null,
+      "min_rating": null,
+      "min_rating_count": 5
+    }
+  },
+  {
+    "text": "อยากได้หนังสือการเงินไม่เกิน 300 เรต 4 ขึ้นไป รีวิว 20 คนขึ้นไป",
+    "type": "complex",
+    "expected": {
+      "intent": "recommend",
+      "category_id": "60",
+      "category": "การเงินการลงทุน",
+      "price_type": null,
+      "max_price": 300,
+      "min_rating": 4.0,
+      "min_rating_count": 20
+    }
+  }
+]

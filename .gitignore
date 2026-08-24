@@ -2,4 +2,4 @@ meb_env/
 __pycache__/
 .env
 docs/
-data/
+data/raw

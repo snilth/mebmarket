@@ -1,0 +1,235 @@
+{
+  "intent_accuracy": 97.5,
+  "category_accuracy": 95.0,
+  "entity_accuracy": 99.16666666666667,
+  "overall_accuracy": 90.0,
+  "threshold": 85.0,
+  "source_report": "data/nlp/evaluation_report.json",
+  "passed": true,
+  "original_report": {
+    "metrics": {
+      "total": 120,
+      "intent_accuracy": 0.975,
+      "category_accuracy": 0.95,
+      "entity_accuracy": 0.9916666666666667,
+      "overall_accuracy": 0.9
+    },
+    "metrics_by_type": {
+      "normal": {
+        "total": 30,
+        "intent_accuracy": 1.0,
+        "category_accuracy": 1.0,
+        "entity_accuracy": 1.0,
+        "overall_accuracy": 1.0
+      },
+      "colloquial": {
+        "total": 30,
+        "intent_accuracy": 1.0,
+        "category_accuracy": 0.9666666666666667,
+        "entity_accuracy": 0.9916666666666667,
+        "overall_accuracy": 0.9333333333333333
+      },
+      "typo": {
+        "total": 30,
+        "intent_accuracy": 0.9666666666666667,
+        "category_accuracy": 0.8666666666666667,
+        "entity_accuracy": 0.975,
+        "overall_accuracy": 0.7666666666666667
+      },
+      "complex": {
+        "total": 30,
+        "intent_accuracy": 0.9333333333333333,
+        "category_accuracy": 0.9666666666666667,
+        "entity_accuracy": 1.0,
+        "overall_accuracy": 0.9
+      }
+    },
+    "failed_commands": [
+      {
+        "text": "อยากได้หนังสือช่วยจัดชีวิตให้เป็นระบบ",
+        "type": "colloquial",
+        "differences": [
+          {
+            "field": "category_id",
+            "expected": "15",
+            "predicted": null
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": null,
+        "intent_score": 1.0,
+        "category_score": null
+      },
+      {
+        "text": "อยากได้หนังสือคอมเรตสัก 4.5 ขึ้น",
+        "type": "colloquial",
+        "differences": [
+          {
+            "field": "min_rating",
+            "expected": 4.5,
+            "predicted": null
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": "exact_alias",
+        "intent_score": 1.0,
+        "category_score": 1.0
+      },
+      {
+        "text": "อยากอ่านเกิร์ลเลิฟฟ",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "category_id",
+            "expected": "51",
+            "predicted": null
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": null,
+        "intent_score": 1.0,
+        "category_score": null
+      },
+      {
+        "text": "ขอจิตวิดยา",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "intent",
+            "expected": "recommend",
+            "predicted": "unknown"
+          },
+          {
+            "field": "category_id",
+            "expected": "154",
+            "predicted": null
+          }
+        ],
+        "intent_method": "semantic_e5",
+        "category_method": null,
+        "intent_score": 0.8205,
+        "category_score": null
+      },
+      {
+        "text": "ขอการ์ตูนผุ้หญิง",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "category_id",
+            "expected": "12",
+            "predicted": "148"
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": "exact_alias",
+        "intent_score": 1.0,
+        "category_score": 1.0
+      },
+      {
+        "text": "หาเรื่องการเงินไม่เกีน 200 บาท",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "max_price",
+            "expected": 200,
+            "predicted": null
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": "exact_alias",
+        "intent_score": 1.0,
+        "category_score": 1.0
+      },
+      {
+        "text": "ขอหนังสือคอมเรตติ้งง 4 ขึ้นไป",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "min_rating",
+            "expected": 4.0,
+            "predicted": null
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": "exact_alias",
+        "intent_score": 1.0,
+        "category_score": 1.0
+      },
+      {
+        "text": "หาไซไฟราคาไม่เกีน 250 บาท",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "max_price",
+            "expected": 250,
+            "predicted": null
+          }
+        ],
+        "intent_method": "category_signal",
+        "category_method": "exact_alias",
+        "intent_score": 1.0,
+        "category_score": 1.0
+      },
+      {
+        "text": "ขอการ์ตูนผุ้หญิงเรต 4.5 ขึ้นไป",
+        "type": "typo",
+        "differences": [
+          {
+            "field": "category_id",
+            "expected": "12",
+            "predicted": "148"
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": "exact_alias",
+        "intent_score": 1.0,
+        "category_score": 1.0
+      },
+      {
+        "text": "มีอะไรเกี่ยวกับหุ้นที่ไม่เกิน 250 บาทและเรต 4.5 ขึ้นไปมั้ย",
+        "type": "complex",
+        "differences": [
+          {
+            "field": "category_id",
+            "expected": "60",
+            "predicted": "23"
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": "fuzzy_alias",
+        "intent_score": 1.0,
+        "category_score": 83.33333333333334
+      },
+      {
+        "text": "ขอบคุณสำหรับคำแนะนำ",
+        "type": "complex",
+        "differences": [
+          {
+            "field": "intent",
+            "expected": "unknown",
+            "predicted": "recommend"
+          }
+        ],
+        "intent_method": "rule",
+        "category_method": null,
+        "intent_score": 1.0,
+        "category_score": null
+      },
+      {
+        "text": "ช่วยเล่าเรื่องตลกหน่อย",
+        "type": "complex",
+        "differences": [
+          {
+            "field": "intent",
+            "expected": "unknown",
+            "predicted": "recommend"
+          }
+        ],
+        "intent_method": "semantic_e5",
+        "category_method": null,
+        "intent_score": 0.8399,
+        "category_score": null
+      }
+    ]
+  }
+}

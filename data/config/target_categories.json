@@ -1,0 +1,109 @@
+{
+  "max_books_per_category": 150,
+  "categories": [
+    {
+      "category_id": "21",
+      "category_name": "นิยายรัก",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "228",
+      "category_name": "นิยายรักจีนโบราณ",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "54",
+      "category_name": "นิยายวาย Boy Love / Yaoi",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "51",
+      "category_name": "นิยาย Girl Love/Yuri",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "4",
+      "category_name": "นิยายแฟนตาซี",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "48",
+      "category_name": "นิยายสืบสวนสอบสวน/ทริลเลอร์",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "32",
+      "category_name": "นิยายลึกลับ/เขย่าขวัญ",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+    {
+      "category_id": "20",
+      "category_name": "นิยายไซไฟ",
+      "parent_category_id": "2",
+      "parent_category_name": "นิยาย/วรรณกรรม"
+    },
+
+    {
+      "category_id": "15",
+      "category_name": "พัฒนาตนเอง",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+    {
+      "category_id": "154",
+      "category_name": "จิตวิทยา",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+    {
+      "category_id": "60",
+      "category_name": "การเงินการลงทุน",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+    {
+      "category_id": "18",
+      "category_name": "คอมพิวเตอร์",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+    {
+      "category_id": "8",
+      "category_name": "วิทยาศาสตร์และเทคโนโลยี",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+    {
+      "category_id": "22",
+      "category_name": "สุขภาพ",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+    {
+      "category_id": "23",
+      "category_name": "ท่องเที่ยว",
+      "parent_category_id": null,
+      "parent_category_name": null
+    },
+
+    {
+      "category_id": "148",
+      "category_name": "การ์ตูนทั่วไป",
+      "parent_category_id": "227",
+      "parent_category_name": "การ์ตูน"
+    },
+    {
+      "category_id": "12",
+      "category_name": "การ์ตูนผู้หญิง",
+      "parent_category_id": "227",
+      "parent_category_name": "การ์ตูน"
+    }
+  ]
+}

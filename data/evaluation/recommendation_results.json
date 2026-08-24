@@ -1,0 +1,133 @@
+{
+  "constraint_tests": [
+    {
+      "name": "category",
+      "query": "ขอนิยายแฟนตาซี",
+      "candidate_count": 150,
+      "returned_books": 5,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "max_price",
+      "query": "ขอหนังสือคอมราคาไม่เกิน 200 บาท",
+      "candidate_count": 58,
+      "returned_books": 5,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "free",
+      "query": "ขอหนังสือสุขภาพฟรี",
+      "candidate_count": 7,
+      "returned_books": 5,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "min_rating",
+      "query": "แนะนำหนังสือการเงินเรต 4 ขึ้นไป",
+      "candidate_count": 50,
+      "returned_books": 5,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "min_review_count",
+      "query": "หานิยายสืบสวนรีวิวอย่างน้อย 20 คน",
+      "candidate_count": 2,
+      "returned_books": 2,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "name": "complex",
+      "query": "ขอนิยายแฟนตาซีราคาไม่เกิน 200 บาท เรต 4 ขึ้นไป",
+      "candidate_count": 26,
+      "returned_books": 5,
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "constraint_pass_count": 6,
+  "constraint_total": 6,
+  "ranking": {
+    "query": "ขอนิยายแฟนตาซี",
+    "returned_ids": [
+      "465981",
+      "464657",
+      "464654",
+      "464652",
+      "464587"
+    ],
+    "expected_top5_ids": [
+      "465981",
+      "464657",
+      "464654",
+      "464652",
+      "464587"
+    ],
+    "returned_count": 5,
+    "passed": true
+  },
+  "pagination": {
+    "page_1_count": 5,
+    "page_2_count": 5,
+    "overlap_count": 0,
+    "overlap_ids": [],
+    "passed": true
+  },
+  "randomization": {
+    "runs": 100,
+    "books_per_run": 5,
+    "invalid_result_count": 0,
+    "duplicate_inside_run": 0,
+    "unique_result_sets": 99,
+    "identical_set_repeats": 1,
+    "unique_books_observed": 20,
+    "most_common_books": [
+      {
+        "book_id": "464616",
+        "appearances": 34
+      },
+      {
+        "book_id": "464657",
+        "appearances": 34
+      },
+      {
+        "book_id": "464652",
+        "appearances": 30
+      },
+      {
+        "book_id": "464731",
+        "appearances": 29
+      },
+      {
+        "book_id": "465981",
+        "appearances": 29
+      },
+      {
+        "book_id": "464706",
+        "appearances": 28
+      },
+      {
+        "book_id": "463706",
+        "appearances": 27
+      },
+      {
+        "book_id": "464572",
+        "appearances": 26
+      },
+      {
+        "book_id": "463664",
+        "appearances": 26
+      },
+      {
+        "book_id": "463703",
+        "appearances": 26
+      }
+    ],
+    "passed": true
+  },
+  "passed": true
+}
